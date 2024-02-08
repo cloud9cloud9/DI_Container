@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.context.ApplicationContext;
 import org.example.context.ComponentContainer;
-import org.example.entity.Car;
 import org.example.entity.Human;
 
 public class Main {
