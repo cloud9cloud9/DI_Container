@@ -18,7 +18,7 @@ public class ComponentContainer {
     }
 
     public void scanAndInstantiate() {
-        ClassGraph classGraph = new ClassGraph().enableAllInfo().whitelistPackages(FilePath.filePathByContextApp);
+        ClassGraph classGraph = new ClassGraph().enableAllInfo().acceptPackages(FilePath.filePathByContextApp);
         try (ScanResult scanResult = classGraph.scan()) {
             for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(Component.class.getName())) {
                 String className = classInfo.getName();

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class ApplicationContext {
     private static final Map<String, Object> beans = new HashMap<>();
-    private String filePath;
+    private final String filePath;
 
     public ApplicationContext() {
         this.filePath = FilePath.filePathByContextApp;
@@ -24,7 +24,7 @@ public class ApplicationContext {
         List<Object> objects = null;
         List<String> clazz = new ArrayList<>();
         try (ScanResult scanResult = new ClassGraph()
-                .whitelistPackages(filePath)
+                .acceptPackages(filePath)
                 .scan()) {
             ClassInfoList allClasses = scanResult.getAllClasses();
             for (ClassInfo classInfo : allClasses) {
@@ -32,8 +32,7 @@ public class ApplicationContext {
             }
             if (!clazz.isEmpty()) {
                  objects = clazz.stream()
-                        .map(className -> createNewInstance(className))
-                        .filter(Objects::nonNull)
+                        .map(this::createNewInstance)
                         .collect(Collectors.toList());
             }
         }
@@ -42,8 +41,9 @@ public class ApplicationContext {
     private Object createNewInstance(String className){
         try {
             Class<?> classes = Class.forName(className);
-            return classes.newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            return classes.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
